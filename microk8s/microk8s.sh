@@ -1,6 +1,5 @@
-# Microk8s Installer
+#!/usr/bin/env bash
 
-```bash
 axel 'http://192.168.64.1:8080/core.tar.gz'
 axel 'http://192.168.64.1:8080/microk8s.tar.gz'
 
@@ -18,9 +17,11 @@ snap alias microk8s.kubectl kubectl
 # HTTPS_PROXY=socks5://192.168.64.1:1080
 
 docker pull mirrorgooglecontainers/pause:3.1
-docker tag mirrorgooglecontainers/pause:3.1 k8s.gcr.io/pause:3.1
+docker tag mirrorgooglecontainers/pause:3.1 \
+  k8s.gcr.io/pause:3.1
 docker pull mirrorgooglecontainers/kubernetes-dashboard-amd64:v1.10.1
-docker tag mirrorgooglecontainers/kubernetes-dashboard-amd64:v1.10.1 k8s.gcr.io/kubernetes-dashboard-amd64:v1.10.1
+docker tag mirrorgooglecontainers/kubernetes-dashboard-amd64:v1.10.1 \
+  k8s.gcr.io/kubernetes-dashboard-amd64:v1.10.1
 
 microk8s.enable dns dashboard registry
 
@@ -43,5 +44,3 @@ microk8s.start
 
 # kubectl proxy --address='192.168.64.4' --disable-filter=true
 kubectl proxy --address='0.0.0.0' --accept-hosts='.*' 
-
-```

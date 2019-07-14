@@ -53,8 +53,38 @@ eof
 # kubectl create -f dashboard-adminuser-roleBind.yaml
 kubectl apply -f dashboard-adminuser-roleBind.yaml
 
+cat > dashboard-support-https.yaml <<EOF
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: dashboard-ingress
+  namespace: kube-system
+  annotations:
+    # redirect to https while access by http
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    # HTTPS transfer，(because ingress use HTTP  by default)
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  # configure the secret created above
+  tls:
+    - secretName: secret-ca-k8s-hiko-im
+  rules:
+  - host: dashboard.k8s.hiko.im
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kubernetes-dashboard
+          servicePort: 443
+EOF
+# kubectl delete -f dashboard-support-https.yaml
+# kubectl create -f dashboard-support-https.yaml
+kubectl apply -f dashboard-support-https.yaml
+
 rm ./kube-dashboard-access*
 rm ./dashboard-adminuser*
+rm ./dashboard-support-https*
 
 kubectl -n kube-system describe secret \
   $(kubectl -n kube-system get secret |\
